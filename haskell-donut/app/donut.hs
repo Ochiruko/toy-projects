@@ -40,13 +40,15 @@ rotateY rθ (Vec3 x y z) = Vec3 (x * cos rθ - z * sin rθ) y (x * sin rθ + z *
 rotateZ rθ (Vec3 x y z) = Vec3 (x * cos rθ - y * sin rθ) (x * sin rθ + y * cos rθ) z
 
 -- Rodriguez' rotation formula (Used wikipedia to find formula. Is that cheating?)
-rotate' rvec rθ v = fmap (cos rθ *) v 
-                  + fmap (sin rθ *) (crossProduct k v)
-                  + fmap ((dotProduct k v) * (1 - cos rθ) *) k
+rotate' rvec rθ v 
+  = fmap (cos rθ *) v 
+  + fmap (sin rθ *) (crossProduct k v)
+  + fmap ((dotProduct k v) * (1 - cos rθ) *) k
 
-donut r1 r2 rvec rθ θ1 θ2 = fmap ( (r1 + r2 * cos θ2) * cos θ1 * ) i'
-                          + fmap ( (r1 + r2 * cos θ2) * sin θ1 * ) j'
-                          + fmap ( r2 * sin θ2 * ) k'
+donut r1 r2 rvec rθ θ1 θ2 
+  = fmap ( (r1 + r2 * cos θ2) * cos θ1 * ) i'
+  + fmap ( (r1 + r2 * cos θ2) * sin θ1 * ) j'
+  + fmap ( r2 * sin θ2 * ) k'
   where
     i' = rotate' rvec rθ i
     j' = rotate' rvec rθ j
