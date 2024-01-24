@@ -1,5 +1,4 @@
 module Donut where
-import gloss
 
 -- all trig in radians
 -- gloss gui is perfect
