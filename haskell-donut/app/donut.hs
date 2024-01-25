@@ -4,6 +4,8 @@
 
 module Donut where
 
+-- base >= 4.13.1, gloss==1.13.*
+
 -- all trig in radians
 -- gloss gui is perfect
 -- compile with -O2 flag (level 2 optimizations)
@@ -22,22 +24,22 @@ zipVec2With f (Vec2 (a1, a2)) (Vec2 (b1, b2))
 
 
 instance Num a => Num (Vec3 a) where
-  a + b  = zipVec3With (+) a b
-  a - b  = zipVec3With (-) a b
-  a * b  = zipVec3With (*) a b
-  negate = fmap negate
-  abs    = error "You called abs on a Vec3. Did you mean norm?"
-  signum = error "You called signum on a Vec3."
-  fromInteger x = error "You called fromInteger on a Vec3."
+  a + b    = zipVec3With (+) a b
+  a - b    = zipVec3With (-) a b
+  a * b    = zipVec3With (*) a b
+  negate   = fmap negate
+  abs _    = error "You called abs on a Vec3. Did you mean norm?"
+  signum _ = error "You called signum on a Vec3."
+  fromInteger _ = error "You called fromInteger on a Vec3."
 
 instance Num a => Num (Vec2 a) where
-  a + b  = zipVec2With (+) a b
-  a - b  = zipVec2With (-) a b
-  a * b  = zipVec2With (*) a b
-  negate = fmap negate
-  abs    = error "You called abs on a Vec2. Did you mean norm?"
-  signum = error "You called signum on a Vec2."
-  fromInteger x = error "You called fromInteger on a Vec2."
+  a + b    = zipVec2With (+) a b
+  a - b    = zipVec2With (-) a b
+  a * b    = zipVec2With (*) a b
+  negate   = fmap negate
+  abs _    = error "You called abs on a Vec2. Did you mean norm?"
+  signum _ = error "You called signum on a Vec2."
+  fromInteger _ = error "You called fromInteger on a Vec2."
 
 i3 :: forall a. Floating a => Vec3 a
 i3 = Vec3 (1, 0, 0)
@@ -85,13 +87,13 @@ rotateZ :: Float -> Vec3 Float -> Vec3 Float
 rotateZ rθ (Vec3 (x, y, z)) = Vec3 (x * cos rθ - y * sin rθ, x * sin rθ + y * cos rθ, z)
 
 -- Rodriguez' rotation formula (Used wikipedia to find formula. Is that cheating?)
-rotate3 :: p -> Float -> Vec3 Float -> Vec3 Float
+rotate3 :: Vec3 Float -> Float -> Vec3 Float -> Vec3 Float
 rotate3 rvec rθ v 
   = fmap (cos rθ *) v 
-  + fmap (sin rθ *) (crossProduct3 k3 v)
-  + fmap (dotProduct3 k3 v * (1 - cos rθ) *) k3
+  + fmap (sin rθ *) (crossProduct3 rvec v)
+  + fmap (dotProduct3 rvec v * (1 - cos rθ) *) rvec
 
-donut :: Float -> Float -> p -> Float -> Float -> Float -> Vec3 Float
+donut :: Float -> Float -> Vec3 Float -> Float -> Float -> Float -> Vec3 Float
 donut r1 r2 rvec rθ θ1 θ2 
   = fmap ( (r1 + r2 * cos θ2) * cos θ1 * ) i'
   + fmap ( (r1 + r2 * cos θ2) * sin θ1 * ) j'
