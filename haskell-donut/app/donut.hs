@@ -1,3 +1,6 @@
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFoldable #-}
+
 module Donut where
 
 -- all trig in radians
@@ -6,7 +9,7 @@ module Donut where
 -- all functions and operators not defined in this document are documented in 
 --   Hoogle, the Haskell search engine.
 
-data Vec3 a = Vec3 a a a deriving (Show, Functor, Foldable)
+newtype Vec3 a = Vec3 (a, a, a) deriving (Show, Functor, Foldable)
 
 zipVecWith :: (a -> b -> c) -> Vec3 a -> Vec3 b -> Vec3 c
 zipVecWith f (Vec3 a1 a2 a3) (Vec3 b1 b2 b3) =
@@ -22,9 +25,9 @@ instance Num a => Num (Vec3 a) where
   fromInteger x = Vec3 (fromInteger x) 0 0
 
 i :: Vec3 Float
-i = Vec3 1 0 0
+i = Vec3 (1, 0, 0)
 j :: Vec3 Float
-j = Vec3 0 1 0
+j = Vec3 (0, 1, 0)
 k :: Vec3 Float
 k = Vec3 0 0 1
 

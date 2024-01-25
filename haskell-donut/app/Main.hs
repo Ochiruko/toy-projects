@@ -1,6 +1,7 @@
 module Main where
 
 import Graphics.Gloss
+import Donut
 
 mainWindow :: Display
 mainWindow = InWindow "Main Window" (400, 400) (0, 0)
