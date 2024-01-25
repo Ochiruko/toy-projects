@@ -21,30 +21,43 @@ instance Num a => Num (Vec3 a) where
   signum = undefined
   fromInteger x = Vec3 (fromInteger x) 0 0
 
+i :: Vec3 Float
 i = Vec3 1 0 0
+j :: Vec3 Float
 j = Vec3 0 1 0
+k :: Vec3 Float
 k = Vec3 0 0 1
 
+dotProduct :: Num a => Vec3 a -> Vec3 a -> a
 dotProduct w v = sum $ zipVecWith (*) w v
+crossProduct :: Num a => Vec3 a -> Vec3 a -> Vec3 a
 crossProduct (Vec3 a1 a2 a3) (Vec3 b1 b2 b3) =
   Vec3 (a2 * b3 - a3 * b2) (a3 * b1 - a1 * b3) (a1 * b2 - a2 * b1)
 
+norm :: Vec3 Float -> Float
 norm = sqrt . sum . fmap (^2)
 
 -- component and projection of v onto w
+component :: Vec3 Float -> Vec3 Float -> Float
 component  w v =  dotProduct w v / norm w
+projection :: Vec3 Float -> Vec3 Float -> Vec3 Float
 projection w v = (dotProduct w v / norm w ^ 2 *) <$> w
 
+rotateX :: Float -> Vec3 Float -> Vec3 Float
 rotateX rθ (Vec3 x y z) = Vec3 x (y * cos rθ - z * sin rθ) (y * sin rθ + z * cos rθ)
+rotateY :: Float -> Vec3 Float -> Vec3 Float
 rotateY rθ (Vec3 x y z) = Vec3 (x * cos rθ - z * sin rθ) y (x * sin rθ + z * cos rθ)
+rotateZ :: Float -> Vec3 Float -> Vec3 Float
 rotateZ rθ (Vec3 x y z) = Vec3 (x * cos rθ - y * sin rθ) (x * sin rθ + y * cos rθ) z
 
 -- Rodriguez' rotation formula (Used wikipedia to find formula. Is that cheating?)
+rotate' :: p -> Float -> Vec3 Float -> Vec3 Float
 rotate' rvec rθ v 
   = fmap (cos rθ *) v 
   + fmap (sin rθ *) (crossProduct k v)
-  + fmap ((dotProduct k v) * (1 - cos rθ) *) k
+  + fmap (dotProduct k v * (1 - cos rθ) *) k
 
+donut :: Float -> Float -> p -> Float -> Float -> Float -> Vec3 Float
 donut r1 r2 rvec rθ θ1 θ2 
   = fmap ( (r1 + r2 * cos θ2) * cos θ1 * ) i'
   + fmap ( (r1 + r2 * cos θ2) * sin θ1 * ) j'

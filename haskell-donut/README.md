@@ -1,2 +1,2 @@
 # haskell-donut
-To install:
+https://github.com/haskell-opengl/GLUT/pull/23
