@@ -7,8 +7,7 @@ module Donut where
 -- all trig in radians
 -- gloss gui is perfect
 -- compile with -O2 flag (level 2 optimizations)
--- all functions and operators not defined in this document are documented in 
---   Hoogle, the Haskell search engine.
+-- all functions and operators not defined in this document are documented in Hoogle, the Haskell search engine.
 
 newtype Vec3 a = Vec3 (a, a, a) deriving (Show, Functor, Foldable)
 newtype Vec2 a = Vec2 (a, a)    deriving (Show, Functor, Foldable)
