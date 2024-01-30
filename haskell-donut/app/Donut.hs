@@ -103,8 +103,12 @@ donut r1 r2 rvec rθ θ1 θ2
     j' = rotate3 rvec rθ j3
     k' = rotate3 rvec rθ k3
 
-{- FINAL PLAN FOR THE PRIMARY DATA STRUCTURE:
-I can have just the bare details necessary stored in a stream, and then feed those to a 
-  function that generates a structure of the kind that Gloss takes, in addition to the shadings.
--}
+normalToDonut rvec rθ θ1 θ2
+  = fmap ( cos θ2 * cos θ1 * ) i'
+  + fmap ( cos θ2 * sin θ1 * ) j'
+  + fmap ( sin θ2 * ) k'
+  where
+    i' = rotate3 rvec rθ i3
+    j' = rotate3 rvec rθ j3
+    k' = rotate3 rvec rθ k3
 
