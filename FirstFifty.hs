@@ -14,13 +14,12 @@ main = printAnswers
 printAnswers :: IO ()
 printAnswers = L.foldl' (\ioAcc (pnum, answer) ->
     let nextLine = "problem " ++ show pnum ++ ": " ++ show answer 
-                    ++ stimesMonoid (maxLength - numLength answer) " " ++ " is " 
-                    ++ if (checkAnswer pnum answer) then "correct" else "incorrect"
-                    ++ error "reached the end... problem with euler2?"
+                   ++ stimesMonoid (maxLength - numLength answer) " " ++ " is " 
+                   ++ if (checkAnswer pnum answer) then "correct" else "incorrect"
     in ioAcc >> putStrLn nextLine) (return ()) answerList
-    where numLength = length . toDigitList
+    where numLength = toInteger . length . show
           -- the problem lies here
-          maxLength = maximum . map numLength . map snd $ answerList
+          maxLength = maximum . map (\(x, y) -> numLength x + numLength y) $ answerList
 
 answerList :: [(Integer, Integer)]
 answerList = [ (1,  toInteger euler1),  (2,  toInteger euler2),  (3,  toInteger euler3)
@@ -64,27 +63,27 @@ euler4 = maximum
 euler5 = smallestMultiple [1..20]
 euler6 = squaresDiff 100
   where squaresDiff x = (3*x^4 + 2*x^3 - 3*x^2 - 2*x) `div` 12
-euler7 = -1
-euler8 = -1
-euler9 = -1
-euler10 = -1
-euler11 = -1
-euler12 = -1
-euler13 = -1
-euler14 = -1
-euler15 = -1
-euler16 = -1
-euler17 = -1
-euler18 = -1
-euler19 = -1
-euler20 = -1
-euler21 = -1
-euler22 = -1
-euler23 = -1
-euler24 = -1
-euler25 = -1
-euler26 = -1
-euler27 = -1
+euler7 = 0
+euler8 = 0
+euler9 = 0
+euler10 = 0
+euler11 = 0
+euler12 = 0
+euler13 = 0
+euler14 = 0
+euler15 = 0
+euler16 = 0
+euler17 = 0
+euler18 = 0
+euler19 = 0
+euler20 = 0
+euler21 = 0
+euler22 = 0
+euler23 = 0
+euler24 = 0
+euler25 = 0
+euler26 = 0
+euler27 = 0
 
 -- HELPERS
 fibs :: [Integer]
@@ -112,10 +111,7 @@ combineWith zipper f g x = zipper (f x) (g x)
 
 type DigitList = [Integer]
 toDigitList :: Integer -> DigitList
-toDigitList 0 = [0]
-toDigitList n = reverse . toRevDigitList $ n
-  where toRevDigitList 0 = []
-        toRevDigitList n = mod n 10 : toRevDigitList (div n 10)
+toDigitList = map read . map (: []) . show . abs
 
 -- works fine
 newtype SimpleMap a b = SimpleMap (S.Set a, a -> b)
