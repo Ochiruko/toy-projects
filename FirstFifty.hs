@@ -1,56 +1,56 @@
 module FirstFifty where
 
-import qualified Data.Monoid as M
+import Data.Semigroup
+import Data.Monoid
 import qualified Data.List as L
 import qualified Data.Set as S
+import qualified Data.String as Str
 
 -- VIEW
 main :: IO ()
-main = printMyAnswers
+main = printAnswers
 
 -- problem [n]: [answer] is [correct | incorrect]
-printMyAnswers :: IO ()
-printMyAnswers = foldl (\ioAcc (pnum, answer) ->
-  let nextLine = "problem " ++ show pnum ++ ": " ++ show answer ++ " is " ++ if checkAnswer pnum answer then "correct" else "incorrect"
-  in ioAcc >> putStrLn nextLine) (return ()) answerList
+printAnswers :: IO ()
+printAnswers = L.foldl' (\ioAcc (pnum, answer) ->
+    let nextLine = "problem " ++ show pnum ++ ": " ++ show answer 
+                    ++ stimesMonoid (maxLength - numLength answer) " " ++ " is " 
+                    ++ if (checkAnswer pnum answer) then "correct" else "incorrect"
+                    ++ error "reached the end... problem with euler2?"
+    in ioAcc >> putStrLn nextLine) (return ()) answerList
+    where numLength = length . toDigitList
+          -- the problem lies here
+          maxLength = maximum . map numLength . map snd $ answerList
+
+answerList :: [(Integer, Integer)]
+answerList = [ (1,  toInteger euler1),  (2,  toInteger euler2),  (3,  toInteger euler3)
+             , (4,  toInteger euler4),  (5,  toInteger euler5),  (6,  toInteger euler6)
+             , (7,  toInteger euler7),  (8,  toInteger euler8),  (9,  toInteger euler9)
+             , (10, toInteger euler10), (11, toInteger euler10), (12, toInteger euler10)
+             , (13, toInteger euler10), (14, toInteger euler10), (15, toInteger euler10)
+             , (16, toInteger euler10), (17, toInteger euler10), (18, toInteger euler10)
+             , (19, toInteger euler10), (20, toInteger euler10), (21, toInteger euler21) 
+             , (22, toInteger euler10), (23, toInteger euler10), (24, toInteger euler10)
+             , (25, toInteger euler10), (26, toInteger euler10), (27, toInteger euler10) ]
+             -- MS. THOMAS
 
 checkAnswer :: Integer -> Integer -> Bool
 checkAnswer n x = x == solution
   where solution = case n of
-          1  -> 233168
-          2  -> 4613732
-          3  -> 6857
-          4  -> 906609
-          5  -> 232792560
-          6  -> 25164150
-          7  -> 104743
-          8  -> 23514624000
-          9  -> 31875000
-          10 -> 142913828922
-          11 -> 70600674
-          12 -> 76576500
-          13 -> 5537376230
-          14 -> 837799
-          15 -> 137846528820
-          16 -> 1366
-          17 -> 21124
-          18 -> 1074
-          19 -> 171
-          20 -> 648
-          21 -> 31626
-          22 -> undefined
-          23 -> undefined
-          24 -> undefined
-          25 -> undefined
-          26 -> undefined
-          27 -> undefined
-          28 -> undefined
-          29 -> undefined
-          30 -> undefined
+          1  -> 233168;         2  -> 4613732;          3  -> 6857
+          4  -> 906609;         5  -> 232792560;        6  -> 25164150
+          7  -> 104743;         8  -> 23514624000;      9  -> 31875000
+          10 -> 142913828922;   11 -> 70600674;         12 -> 76576500
+          13 -> 5537376230;     14 -> 837799;           15 -> 137846528820
+          16 -> 1366;           17 -> 21124;            18 -> 1074
+          19 -> 171;            20 -> 648;              21 -> 31626
+          22 -> 1;              23 -> 1;                24 -> 1        
+          25 -> 1;              26 -> 1;                27 -> 1        
+          28 -> 1;              29 -> 1;                30 -> 1        
           _  -> error $ "You forgot to put problem " ++ show n ++ " in the checkAnswer solution cases."
 
 -- SOLUTIONS
-euler1 = sum . filter (combineWith (||) (3 `divides`) (5 `divides`)) $ [1..999]
+euler1 = sum . filter (divisibleBy 3) . filter (divisibleBy 5) $ [1..999]
 euler2 = sum . filter even . takeWhile (<= 4000000) $ fibs
 euler3 = highestPrimeFactor 600851475143
 --   aE5 + bE4 + cE3 + cE2 + bE1 + a
@@ -62,7 +62,8 @@ euler4 = maximum
                , b <- [1..999]
                , isPalindrome (11*a*b) ]
 euler5 = smallestMultiple [1..20]
-euler6 = -1
+euler6 = squaresDiff 100
+  where squaresDiff x = (3*x^4 + 2*x^3 - 3*x^2 - 2*x) `div` 12
 euler7 = -1
 euler8 = -1
 euler9 = -1
@@ -78,29 +79,12 @@ euler18 = -1
 euler19 = -1
 euler20 = -1
 euler21 = -1
-
-answerList :: [(Integer, Integer)]
-answerList = [ (1, toInteger euler1)
-             , (2, toInteger euler2)
-             , (3, toInteger euler3)
-             , (4, toInteger euler4)
-             , (5, toInteger euler5)
-             , (6, toInteger euler6)
-             , (7, toInteger euler7)
-             , (8, toInteger euler8)
-             , (9, toInteger euler9)
-             , (10, toInteger euler10)
-             , (11, toInteger euler10)
-             , (12, toInteger euler10)
-             , (13, toInteger euler10)
-             , (14, toInteger euler10)
-             , (15, toInteger euler10)
-             , (16, toInteger euler10)
-             , (17, toInteger euler10)
-             , (18, toInteger euler10)
-             , (19, toInteger euler10)
-             , (20, toInteger euler10)
-             , (21, toInteger euler21) ]
+euler22 = -1
+euler23 = -1
+euler24 = -1
+euler25 = -1
+euler26 = -1
+euler27 = -1
 
 -- HELPERS
 fibs :: [Integer]
@@ -114,6 +98,7 @@ factorial n | n == 0 = 1
 divides :: Integral a => a -> a -> Bool
 divides d 0 = error "you modded by 0 in divides"
 divides d n = mod n d == 0
+divisibleBy = divides
 
 highestPrimeFactor :: Integral t => t -> t
 highestPrimeFactor n = divIncUntilPrime 2 n
@@ -215,7 +200,7 @@ smallestMultiple = weightedProduct . concatMaxes . map primeDivisorCount
     weightedProduct :: SimpleMap Integer Integer -> Integer
     weightedProduct smap = S.foldr (\key product ->
       let value = unsafeGetValue key smap
-      in product * key ^ value) 1 smap
+      in product * key ^ value) 1 (keys smap)
 
 isPalindrome :: Integer -> Bool
 isPalindrome n = 
@@ -226,7 +211,9 @@ properDivisors :: Integer -> [Integer]
 properDivisors n = [ i | i <- [1..(div n 2)], divides i n ]
 
 primes :: [Integer]
+-- O( n*pi(n) )
 primes = 2 : filter isPrime [3..]
 
+-- O( pi(n) )
 isPrime :: Integer -> Bool
 isPrime n = all (\x -> mod n x /= 0) $ takeWhile (<= div n 2) primes
