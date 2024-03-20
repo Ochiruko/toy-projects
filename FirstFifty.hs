@@ -213,10 +213,9 @@ smallestMultiple = weightedProduct . concatMaxes . map primeDivisorCount
     concatMaxes = foldr (concatSimpleMap max) emptySimpleMap
     -- the error is in weightedProduct... who knows
     weightedProduct :: SimpleMap Integer Integer -> Integer
-    weightedProduct smap | 0 == (S.size . keys $ smap) = 1
-                         | otherwise =
-      let key = S.elemAt 0 (keys smap)
-      in key * unsafeGetValue key smap * weightedProduct (unsafeRemove key smap)
+    weightedProduct smap = S.foldr (\key product ->
+      let value = unsafeGetValue key smap
+      in product * key ^ value) 1 smap
 
 isPalindrome :: Integer -> Bool
 isPalindrome n = 
