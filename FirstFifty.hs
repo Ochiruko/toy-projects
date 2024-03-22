@@ -2,9 +2,18 @@ module FirstFifty where
 
 import Data.Semigroup
 import Data.Monoid
+import System.IO
+import qualified Data.Char as C
 import qualified Data.List as L
 import qualified Data.Set as S
 import qualified Data.String as Str
+
+-- This module uses a convoluted, messy IO system where it feeds inputList to
+-- answerList, and then folds the answers and solutions into cohesive output.
+-- Although it's fragile, breakable, inefficient, and unscalable due to shoelace and bubble gum
+-- data types being used, it works for now and shouldn't have to scale up until way later on 
+-- ... that said, I will be redesigning the IO system from the ground up in the SecondFifty 
+-- module of these Euler solutions, ideally without the SimpleMap data type.
 
 -- VIEW
 main :: IO ()
@@ -12,26 +21,33 @@ main = printAnswers
 
 -- problem [n]: [answer] is [correct | incorrect]
 printAnswers :: IO ()
-printAnswers = L.foldl' (\ioAcc (pnum, answer) ->
+printAnswers = (inputMap >>= answerList) >>= L.foldl' (\ioAcc (pnum, answer) ->
     let nextLine = "problem " ++ show pnum ++ ": " ++ show answer 
                    ++ stimesMonoid (maxLength - numLength answer) " " ++ " is " 
                    ++ if (checkAnswer pnum answer) then "correct" else "incorrect"
-    in ioAcc >> putStrLn nextLine) (return ()) answerList
+    in ioAcc >> putStrLn nextLine) (return ())
     where numLength = toInteger . length . show
           -- the problem lies here
-          maxLength = maximum . map (\(x, y) -> numLength x + numLength y) $ answerList
+          maxLength = maximum . map (\(x, y) -> numLength x + numLength y) $ al
 
-answerList :: [(Integer, Integer)]
-answerList = [ (1,  toInteger euler1),  (2,  toInteger euler2),  (3,  toInteger euler3)
-             , (4,  toInteger euler4),  (5,  toInteger euler5),  (6,  toInteger euler6)
-             , (7,  toInteger euler7),  (8,  toInteger euler8),  (9,  toInteger euler9)
-             , (10, toInteger euler10), (11, toInteger euler10), (12, toInteger euler10)
-             , (13, toInteger euler10), (14, toInteger euler10), (15, toInteger euler10)
-             , (16, toInteger euler10), (17, toInteger euler10), (18, toInteger euler10)
-             , (19, toInteger euler10), (20, toInteger euler10), (21, toInteger euler21) 
-             , (22, toInteger euler10), (23, toInteger euler10), (24, toInteger euler10)
-             , (25, toInteger euler10), (26, toInteger euler10), (27, toInteger euler10) ]
-             -- MS. THOMAS
+answerList :: SimpleMap Integer String -> [(Integer, Integer)]
+answerList inputMap = foldr (\(n, f) acc -> 
+                                if contains n inputMap
+                                then (n, f (getValue inputMap)) : acc
+                                else (n, f _) : acc) []
+  [ (1,  toInteger . euler1),  (2,  toInteger . euler2),  (3,  toInteger . euler3)
+  , (4,  toInteger . euler4),  (5,  toInteger . euler5),  (6,  toInteger . euler6)
+  , (7,  toInteger . euler7),  (8,  toInteger . euler8),  (9,  toInteger . euler9)
+  , (10, toInteger . euler10), (11, toInteger . euler10), (12, toInteger . euler10)
+  , (13, toInteger . euler10), (14, toInteger . euler10), (15, toInteger . euler10)
+  , (16, toInteger . euler10), (17, toInteger . euler10), (18, toInteger . euler10)
+  , (19, toInteger . euler10), (20, toInteger . euler10), (21, toInteger . euler21) 
+  , (22, toInteger . euler10), (23, toInteger . euler10), (24, toInteger . euler10)
+  , (25, toInteger . euler10), (26, toInteger . euler10), (27, toInteger . euler10) ]
+
+inputMap :: IO (SimpleMap Integer String)
+inputMap = sequence . map seqPair2 $ 
+  [ (8, readFile "e8_longint.txt") ]
 
 checkAnswer :: Integer -> Integer -> Bool
 checkAnswer n x = x == solution
@@ -49,43 +65,52 @@ checkAnswer n x = x == solution
           _  -> error $ "You forgot to put problem " ++ show n ++ " in the checkAnswer solution cases."
 
 -- SOLUTIONS
-euler1 = sum . filter (divisibleBy 3) . filter (divisibleBy 5) $ [1..999]
-euler2 = sum . filter even . takeWhile (<= 4000000) $ fibs
-euler3 = highestPrimeFactor 600851475143
---   aE5 + bE4 + cE3 + cE2 + bE1 + a
+euler1 _  = sum . filter (divisibleBy 3) . filter (divisibleBy 5) $ [1..999]
+euler2 _  = sum . filter even . takeWhile (<= 4000000) $ fibs
+euler3 _  = highestPrimeFactor 600851475143
+--   a*10^5 + b*10^4 + c*10^3 + c*10^2 + b*10^1 + a
 -- = 100001a + 10010b + 1100c
 -- = 11 * (9091a + 910b + 100c)
 -- that is to say, 11 divides all 6 digit palindromes.
-euler4 = maximum
+euler4 _  = maximum
   [ 11 * a * b | a <- [1..(div 999 11)]
                , b <- [1..999]
                , isPalindrome (11*a*b) ]
-euler5 = smallestMultiple [1..20]
-euler6 = squaresDiff 100
+euler5 _  = smallestMultiple [1..20]
+euler6 _  = squaresDiff 100
   where squaresDiff x = (3*x^4 + 2*x^3 - 3*x^2 - 2*x) `div` 12
-euler7 = 0
-euler8 = 0
-euler9 = 0
-euler10 = 0
-euler11 = 0
-euler12 = 0
-euler13 = 0
-euler14 = 0
-euler15 = 0
-euler16 = 0
-euler17 = 0
-euler18 = 0
-euler19 = 0
-euler20 = 0
-euler21 = 0
-euler22 = 0
-euler23 = 0
-euler24 = 0
-euler25 = 0
-euler26 = 0
-euler27 = 0
+euler7 _  = primes !! 10000
+euler8 d  = maxAdjacentProduct 13 . map read . filter C.isDigit $ d
+euler9 _  = 0
+euler10 _ = 0
+euler11 _ = 0
+euler12 _ = 0
+euler13 _ = 0
+euler14 _ = 0
+euler15 _ = 0
+euler16 _ = 0
+euler17 _ = 0
+euler18 _ = 0
+euler19 _ = 0
+euler20 _ = 0
+euler21 _ = 0
+euler22 _ = 0
+euler23 _ = 0
+euler24 _ = 0
+euler25 _ = 0
+euler26 _ = 0
+euler27 _ = 0
 
 -- HELPERS
+
+maxAdjacentProduct :: Integer -> Integer
+maxAdjacentProduct n = fst . foldr (\x (m, xs) ->
+  case (length xs < n, x > head xs) of
+    (True, _)      -> (m, x : xs ++ [x])          
+    (False, True)  -> let xs' = tail xs ++ [x]    
+                      in (max m xs', xs')
+    (False, False) -> (m, tail xs ++ [x])) (0, [])
+
 fibs :: [Integer]
 fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
@@ -125,13 +150,16 @@ instance (Show a, Show b) => Show (SimpleMap a b) where
 keys :: SimpleMap a b -> S.Set a
 keys (SimpleMap (ks, _)) = ks -- keys should be sorted upon entry
 
+contains :: a -> SimpleMap a b -> Bool
+contains x smap = S.member x (keys smap)
+
 -- works fine
 unsafeGetValue :: a -> SimpleMap a b -> b
 unsafeGetValue key (SimpleMap (_, f)) = f key
 
 -- works fine
 getValue :: Ord a => a -> SimpleMap a b -> Maybe b
-getValue key smap = case (S.member key (keys smap)) of
+getValue key smap = case (contains key smap) of
   False -> Nothing
   True  -> Just $ unsafeGetValue key smap
 
@@ -148,6 +176,9 @@ insert (key, value) smap = SimpleMap (S.insert key (keys smap),
                            \k -> if k == key
                                  then value
                                  else unsafeGetValue k smap)
+
+fromList :: [(a, b)] -> SimpleMap a b
+fromList = foldr insert emptySimpleMap
 
 unsafeRemove :: Ord a => a -> SimpleMap a b -> SimpleMap a b
 unsafeRemove key smap = SimpleMap (S.delete key (keys smap),
@@ -181,7 +212,7 @@ primeDivisorCount n = thd $ until ((== 1) . fst) go (n, 0, emptySimpleMap)
     thd (_,_,x) = x 
     go (n, primeN, smap)
       | p `divides` n = (div n p, primeN, 
-        case (S.member p (keys smap)) of
+        case (contains p smap) of
           True  -> applyToValue (+1) p smap
           False -> insert (p, 1) smap)
       | otherwise = (n, primeN + 1, smap)
@@ -207,9 +238,11 @@ properDivisors :: Integer -> [Integer]
 properDivisors n = [ i | i <- [1..(div n 2)], divides i n ]
 
 primes :: [Integer]
--- O( n*pi(n) )
 primes = 2 : filter isPrime [3..]
 
--- O( pi(n) )
+seqPair2 :: (a, m b) -> m (a, b)
+seqPair2 (x, my) = my >>= \y -> return (x, y)
+
+-- O( n * pi(n) )
 isPrime :: Integer -> Bool
 isPrime n = all (\x -> mod n x /= 0) $ takeWhile (<= div n 2) primes
