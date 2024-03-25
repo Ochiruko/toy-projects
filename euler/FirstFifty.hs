@@ -1,4 +1,4 @@
-module FirstFifty where
+module Main where
 
 import Data.Semigroup
 import Data.Monoid
@@ -87,7 +87,7 @@ euler4 _  = maximum
 euler5 _  = smallestMultiple [1..20]
 euler6 _  = squaresDiff 100
   where squaresDiff x = (3*x^4 + 2*x^3 - 3*x^2 - 2*x) `div` 12
-euler7 _  = firstNPrimes 10001 !! 10000
+euler7 _  = primes !! 10000 -- firstNPrimes 10001 !! 10000
 euler8 d  = maxAdjacentProduct 13 . map read . map (:[]) . filter C.isDigit $ d -- too large, check maxAdjacentProduct
 euler9 _  = 0
 euler10 _ = 0
@@ -116,7 +116,7 @@ numLength = toInteger . length . show
 maxAdjacentProduct :: Integer -> [Integer] -> Integer
 maxAdjacentProduct n = fst . foldr (\x (m, xs) ->
   case (toInteger (length xs) < n, x > head xs) of
-    (True, _)      -> (m, x : xs ++ [x])          
+    (True, _)      -> (m, xs ++ [x])          
     (False, True)  -> let xs' = tail xs ++ [x]    
                       in (max m (product xs'), xs')
     (False, False) -> (m, tail xs ++ [x])) (0, [])
@@ -250,13 +250,14 @@ properDivisors n = [ i | i <- [1..(div n 2)], divides i n ]
 seqPair2 :: Monad m => (a, m b) -> m (a, b)
 seqPair2 (x, my) = my >>= \y -> return (x, y)
 
-primes :: [Integer]
-primes = 2 : filter isPrime [3..]
-
 primesBelow :: Integer -> [Integer]
 primesBelow n = snd $ until (\ (i, ps) -> i >= (toInteger (length ps)))
   (\ (i, ps) -> let i' = fromInteger i 
                 in (i + 1, take i' ps ++ [ps !! i'] ++ filter (not . divisibleBy (ps !! i')) (drop (i' + 1) ps))) (0, [2..n])
+  where until p f = go
+          where
+            go !x | p x          = x
+                  | otherwise    = go (f x)
 
 -- seems like there's probably some space time fuckery going on ....
 firstNPrimes :: Integer -> [Integer]
@@ -274,7 +275,15 @@ firstNPrimes n |                 n < 0       = error "firstNPrimes takes only po
                                                + (log (log n') - 2) / log n' 
                                                - (log (log n') ^ 2 - 6 * log (log n') + 10.273) 
                                                / (2 * log n' ^ 2))
+primes = 2 : sieve primes [3..] 
+    where 
+    sieve (p:pt) xs = let (h,t) = span (< p*p) xs 
+                      in h ++ sieve pt [x | x <- t, rem x p > 0]
 
--- O( n * pi(n) )
+{-
+primes :: [Integer]
+primes = 2 : filter isPrime [3..]
+
 isPrime :: Integer -> Bool
 isPrime n = all (\x -> mod n x /= 0) $ takeWhile (<= div n 2) primes
+-}
