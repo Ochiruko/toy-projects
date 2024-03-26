@@ -3,17 +3,14 @@ This project uses Gloss, a graphics library that depends on GLUT. For some reaso
 
 ## Linux
 ### Arch
-| sudo pacman -S freeglut
+> sudo pacman -S freeglut
 ### Debian
 ...
 ### Ubuntu
 ...
 ## Windows
 https://github.com/haskell-opengl/GLUT/pull/23
-try
-| curl https://www.transmissionzero.co.uk/files/software/development/GLUT/https://www.transmissionzero.co.uk/files/software/development/GLUT/freeglut-MinGW-3.0.0-1.mp.zip) | unzip
-
-and then install one of the options?
+Windows is a bit tricky. The PS script below is your best bet.
 
 ~~~
 # URL of the ZIP file
