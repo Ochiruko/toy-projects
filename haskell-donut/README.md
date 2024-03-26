@@ -3,7 +3,9 @@ This project uses Gloss, a graphics library that depends on GLUT. For some reaso
 
 ## Linux
 ### Arch
-> sudo pacman -S freeglut
+```
+ sudo pacman -S freeglut
+```
 ### Debian
 ...
 ### Ubuntu
