@@ -275,6 +275,10 @@ firstNPrimes n |                 n < 0       = error "firstNPrimes takes only po
                                                + (log (log n') - 2) / log n' 
                                                - (log (log n') ^ 2 - 6 * log (log n') + 10.273) 
                                                / (2 * log n' ^ 2))
+
+-- p*p because iteratively, xs has been sieved by all primes less than p,
+-- and so p*p is the next composite number.
+primes :: [Integer]
 primes = 2 : sieve primes [3..] 
     where 
     sieve (p:pt) xs = let (h,t) = span (< p*p) xs 
