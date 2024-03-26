@@ -22,7 +22,7 @@ import GHC.Float
 main :: IO ()
 main = printAnswers
 
--- problem [n]: [answer] is [correct | incorrect]
+-- problem [n]: [answer] is ["correct" | "incorrect"]
 printAnswers :: IO ()
 printAnswers = 
   do im <- inputMap
