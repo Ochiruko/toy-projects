@@ -1,6 +1,15 @@
 # haskell-donut
-https://github.com/haskell-opengl/GLUT/pull/23
+This project uses Gloss, a graphics library that depends on GLUT. For some reason, haskell does not install this by default, so you will need to install GLUT yourself to get this program to run. To do so:
 
+## Linux
+### Arch
+| sudo pacman -S freeglut
+### Debian
+...
+### Ubuntu
+...
+## Windows
+https://github.com/haskell-opengl/GLUT/pull/23
 try
 | curl https://www.transmissionzero.co.uk/files/software/development/GLUT/https://www.transmissionzero.co.uk/files/software/development/GLUT/freeglut-MinGW-3.0.0-1.mp.zip) | unzip
 
@@ -34,3 +43,5 @@ if (Test-Path -Path $extractedFilePath) {
     Write-Host "File not found in the archive: $specificFile"
 }
 ~~~
+## MacOS
+...
