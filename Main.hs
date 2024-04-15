@@ -3,6 +3,7 @@ module Main where
 import Text.ParserCombinators.Parsec hiding (spaces, hexDigit)
 import System.Environment
 import Control.Monad
+import Data.Char (toLower)
 import Numeric
 
 main :: IO ()
@@ -23,7 +24,6 @@ data LispVal = Atom String
              | Bool Bool
              deriving Show
 
--- String ::= "{*/="}"
 parseString :: Parser LispVal
 parseString = 
   do char '"'
@@ -89,7 +89,7 @@ octalDigit :: Parser Char
 octalDigit = choice . map char . map head . map show $ [0..7]
 
 hexDigit :: Parser Char
-hexDigit = digit <|> oneOf "abcdefABCDEF"
+hexDigit = digit <|> liftM toLower (oneOf "abcdefABCDEF")
 
 parseBinary :: Parser LispVal
 parseBinary = do n <- many1 binaryDigit
