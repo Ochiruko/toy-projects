@@ -22,6 +22,7 @@ data LispVal = Atom String
              | Number Integer
              | String String
              | Bool Bool
+             | Char Char
              deriving Show
 
 parseString :: Parser LispVal
@@ -117,6 +118,20 @@ parseNumber =
        'x' -> parseHex
        _   -> fail "must have been a glitch in the system..."
   <|> parseDec
+
+parseChar :: Parser LispVal
+parseChar = 
+  do char '#'
+     char '\\'
+     s <- liftM (:[]) symbol <|> liftM (:[]) (char ' ') <|> many1 letter
+     return $ case length s > 1 of
+       False -> Char . head $ s
+       True  -> Char . matchCharCode $ s
+
+matchCharCode :: String -> Char
+matchCharCode s = case s of
+  "space" -> ' '
+  "newline" -> '\n'
 
 parseExpr :: Parser LispVal
 parseExpr = parseAtom <|> parseString <|> parseNumber
